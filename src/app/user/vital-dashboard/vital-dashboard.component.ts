@@ -115,34 +115,50 @@ export class VitalDashboardComponent implements OnInit {
     this.filteredVitalTasks = filtered;
   }
 
-  onStatusChange(task: Task) {
-    if (task.status === 'DONE' && !task.completedAt) {
-      task.completedAt = new Date().toISOString();
-    }
+ onStatusChange(task: Task) {
+  const previousStatus = task.status; // sauvegarde de l'ancien statut
 
-    this.taskService.updateTaskStatus(task.id!, task.status).subscribe({
-      next: () => {
-        this.applyFilters();
-        Swal.fire({
-          icon: 'success',
-          title: 'Status Updated!',
-          text: `Task status is now "${task.status}"`,
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#f97316',
-          timer: 2500,
-        });
-      },
-      error: (err) => {
-        console.error('Error updating status', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Update Failed',
-          text: 'Could not update the task status.',
-          confirmButtonColor: '#dc2626',
-        });
-      }
-    });
+  if (task.status === 'DONE' && !task.completedAt) {
+    task.completedAt = new Date().toISOString();
   }
+
+  this.taskService.updateTaskStatus(task.id!, task.status).subscribe({
+    next: () => {
+      this.applyFilters();
+      Swal.fire({
+        title: `<span style="color: orange; font-weight: bold;">Task Status Updated</span>`,
+        html: `
+          <div style="text-align: left;">
+            <p><strong>Task:</strong> ${task.title}</p>
+            <p><strong>From:</strong> <span style="color: #FF8C42;">${previousStatus.replace('_',' ')}</span></p>
+            <p><strong>To:</strong> <span style="color: #FF8C42;">${task.status.replace('_',' ')}</span></p>
+          </div>
+        `,
+        icon: 'success',
+        background: '#fff3e0',
+        confirmButtonColor: '#FF8C42',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        customClass: {
+          popup: 'swal-task-popup'
+        }
+      });
+    },
+    error: (err) => {
+      console.error('Error updating status', err);
+      task.status = previousStatus; // rollback si erreur
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to update task status',
+        confirmButtonColor: '#FF8C42'
+      });
+    }
+  });
+}
+
+
 
   getProjectName(task: Task): string {
     const project = this.allProjects.find(p => p.id === task.projectId);

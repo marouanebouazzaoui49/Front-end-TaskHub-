@@ -14,6 +14,7 @@ export class ManagerSettingComponent implements OnInit {
     fullName: '',
     email: '',
     password: '',
+    oldPassword: '',  // <-- ajouté
     role: 'ROLE_USER'
   };
 
@@ -30,6 +31,7 @@ export class ManagerSettingComponent implements OnInit {
         this.user.fullName = data.fullName;
         this.user.email = data.email;
         this.user.role = data.role;
+        this.user.oldPassword = data.password; // <-- conserver ancien mot de passe
       },
       error: (err) => {
         console.error(err);
@@ -54,7 +56,13 @@ export class ManagerSettingComponent implements OnInit {
       return;
     }
 
-    this.userService.updateUser(this.user.id, this.user).subscribe({
+    // Si password vide, utiliser l'ancien mot de passe
+    const payload: User = {
+      ...this.user,
+      password: this.user.password ? this.user.password : this.user.oldPassword
+    };
+
+    this.userService.updateUser(this.user.id, payload).subscribe({
       next: () => {
         this.successMessage = 'Profile updated successfully!';
         this.errorMessage = '';

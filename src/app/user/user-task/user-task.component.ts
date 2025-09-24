@@ -196,21 +196,43 @@ export class UserTaskComponent implements OnInit {
   }
 
   // ==== Status Change with Alert ====
-  updateTaskStatus(task: Task) {
-    this.taskService.updateTaskStatus(task.id!, task.status).subscribe({
-      next: () => {
-        Swal.fire({
-          icon: 'success',
-          title: `Status changed to ${task.status}`,
-          showConfirmButton: false,
-          timer: 1500,
-          position: 'center'
-        });
-        this.filterTasks();
-      },
-      error: () => this.fetchTasks()
-    });
-  }
+updateTaskStatus(task: Task) {
+  const oldStatus = task.status; // ancien statut
+  // Supposons que task.status a été changé dans le template
+  this.taskService.updateTaskStatus(task.id!, task.status).subscribe({
+    next: () => {
+      Swal.fire({
+        title: `<span style="color: orange; font-weight: bold;">Task Status Updated</span>`,
+        html: `
+          <div style="text-align: left;">
+            <p><strong>Task:</strong> ${task.title}</p>
+            <p><strong>From:</strong> <span style="color: #FF8C42;">${oldStatus.replace('_',' ')}</span></p>
+            <p><strong>To:</strong> <span style="color: #FF8C42;">${task.status.replace('_',' ')}</span></p>
+          </div>
+        `,
+        icon: 'success',
+        background: '#fff3e0',
+        confirmButtonColor: '#FF8C42',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        customClass: {
+          popup: 'swal-task-popup'
+        }
+      });
+      this.filterTasks(); // recharge ou filtre les tâches
+    },
+    error: () => {
+      task.status = oldStatus; // rollback
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to update task status',
+        confirmButtonColor: '#FF8C42'
+      });
+    }
+  });
+}
 
   formatDate(dateStr?: string): string {
     if (!dateStr) return '-';

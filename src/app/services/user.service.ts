@@ -9,6 +9,7 @@ export interface User {
   fullName: string;
   email: string;
   password: string;
+  oldPassword: string; 
   role: 'ROLE_ADMIN' | 'ROLE_MANAGER' | 'ROLE_USER';
   createdAt?: string;
 }

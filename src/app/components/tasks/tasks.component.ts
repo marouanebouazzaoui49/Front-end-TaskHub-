@@ -133,8 +133,70 @@ export class TaskComponent implements OnInit {
     return this.filteredTasks.filter(task => task.projectId === projectId && task.status === status);
   }
 
+  // Nouvelle méthode: vérifier si un projet a des tâches (même sans filtres)
+  projectHasAnyTasks(projectId: number): boolean {
+    return this.tasks.some(task => task.projectId === projectId);
+  }
+
+  // Méthode modifiée: vérifier si un projet doit être affiché (même si aucune tâche visible après filtres)
+  shouldShowProject(projectId: number): boolean {
+    // Afficher le projet s'il a des tâches OU si un filtre de projet spécifique est sélectionné
+    return this.projectHasAnyTasks(projectId) || this.filterProject === projectId;
+  }
+
+  // Nouvelle méthode: vérifier si un projet a des tâches visibles après filtrage
   projectHasVisibleTasks(projectId: number): boolean {
     return this.filteredTasks.some(task => task.projectId === projectId);
+  }
+
+  // Nouvelle méthode: obtenir les projets triés dynamiquement
+  get sortedProjects(): any[] {
+    return this.projects.slice().sort((a, b) => {
+      const aHasVisibleTasks = this.projectHasVisibleTasks(a.id);
+      const bHasVisibleTasks = this.projectHasVisibleTasks(b.id);
+      
+      // Les projets avec tâches visibles en premier
+      if (aHasVisibleTasks && !bHasVisibleTasks) return -1;
+      if (!aHasVisibleTasks && bHasVisibleTasks) return 1;
+      
+      // Si même statut de visibilité, garder l'ordre alphabétique
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  // Nouvelle méthode: obtenir le message d'état vide pour une colonne
+  getEmptyColumnMessage(projectId: number, status: string): string {
+    const hasAnyTasksInProject = this.tasks.some(task => task.projectId === projectId);
+    const hasTasksInThisStatus = this.tasks.some(task => task.projectId === projectId && task.status === status);
+    
+    if (!hasAnyTasksInProject) {
+      return 'This project is empty';
+    } else if (!hasTasksInThisStatus) {
+      const statusDisplay = this.getStatusDisplayName(status);
+      return `No tasks in ${statusDisplay}`;
+    } else {
+      return 'No matching tasks';
+    }
+  }
+
+  // Nouvelle méthode: obtenir le nom d'affichage du statut
+  getStatusDisplayName(status: string): string {
+    switch (status) {
+      case 'TODO': return 'To Do';
+      case 'IN_PROGRESS': return 'In Progress';
+      case 'DONE': return 'Done';
+      default: return status;
+    }
+  }
+
+  // Nouvelle méthode: obtenir le nom d'affichage de la priorité
+  getPriorityDisplayName(priority: string): string {
+    switch (priority) {
+      case 'LOW': return 'Low';
+      case 'MEDIUM': return 'Medium';
+      case 'HIGH': return 'High';
+      default: return priority;
+    }
   }
 
   // --- Modales ---
@@ -265,57 +327,83 @@ export class TaskComponent implements OnInit {
   }
 
   deleteComment(taskId: number, commentId: number) {
-    this.commentService.deleteComment(commentId).subscribe(() => {
-      this.comments[taskId] = this.comments[taskId].filter(c => c.id !== commentId);
-    });
-  }
-
-  // --- Drag & Drop ---
-drop(event: CdkDragDrop<Task[]>) {
-  if (event.previousContainer === event.container) {
-    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-  } else {
-    const task = event.previousContainer.data[event.previousIndex];
-    const oldStatus = task.status;
-    const newStatus = event.container.id.split('-')[1];
-    task.status = newStatus;
-
-    this.api.updateTask(task.id!, task).subscribe({
-      next: () => {
-        const taskIndex = this.tasks.findIndex(t => t.id === task.id);
-        if (taskIndex > -1) this.tasks[taskIndex].status = newStatus;
-
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "This comment will be deleted!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#FF7300',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.commentService.deleteComment(commentId).subscribe(() => {
+        this.comments[taskId] = this.comments[taskId].filter(c => c.id !== commentId);
         Swal.fire({
-          title: `<span style="color: orange; font-weight: bold;">Task Status Updated</span>`,
-          html: `
-            <div style="text-align: left;">
-              <p><strong>Task:</strong> ${task.title}</p>
-              <p><strong>From:</strong> <span style="color: #FF8C42;">${oldStatus.replace('_',' ')}</span></p>
-              <p><strong>To:</strong> <span style="color: #FF8C42;">${newStatus.replace('_',' ')}</span></p>
-            </div>
-          `,
-icon: 'success',
-          background: '#fff3e0',
-          confirmButtonColor: '#FF8C42',
-          timer: 2000,
-          timerProgressBar: true,
-          showConfirmButton: false,
-          customClass: {
-            popup: 'swal-task-popup'
-          }
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'Comment has been deleted.',
+          confirmButtonColor: '#FF7300'
         });
-      },
-      error: () => {
-        task.status = oldStatus;
+      }, (err) => {
         Swal.fire({
           icon: 'error',
-          title: 'Error',
-          text: 'Failed to update task status',
-          confirmButtonColor: '#FF8C42'
+          title: 'Error!',
+          text: 'Failed to delete comment.',
+          confirmButtonColor: '#FF7300'
         });
-      }
-    });
+        console.error(err);
+      });
+    }
+  });
+}
 
+
+  // --- Drag & Drop ---
+  drop(event: CdkDragDrop<Task[]>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      const task = event.previousContainer.data[event.previousIndex];
+      const oldStatus = task.status;
+      const newStatus = event.container.id.split('-')[1];
+      task.status = newStatus;
+
+      this.api.updateTask(task.id!, task).subscribe({
+        next: () => {
+          const taskIndex = this.tasks.findIndex(t => t.id === task.id);
+          if (taskIndex > -1) this.tasks[taskIndex].status = newStatus;
+
+          Swal.fire({
+            title: `<span style="color: orange; font-weight: bold;">Task Status Updated</span>`,
+            html: `
+              <div style="text-align: left;">
+                <p><strong>Task:</strong> ${task.title}</p>
+                <p><strong>From:</strong> <span style="color: #FF8C42;">${this.getStatusDisplayName(oldStatus)}</span></p>
+                <p><strong>To:</strong> <span style="color: #FF8C42;">${this.getStatusDisplayName(newStatus)}</span></p>
+              </div>
+            `,
+            icon: 'success',
+            background: '#fff3e0',
+            confirmButtonColor: '#FF8C42',
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            customClass: {
+              popup: 'swal-task-popup'
+            }
+          });
+        },
+        error: () => {
+          task.status = oldStatus;
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to update task status',
+            confirmButtonColor: '#FF8C42'
+          });
+        }
+      });
 
       transferArrayItem(
         event.previousContainer.data,

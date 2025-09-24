@@ -121,7 +121,7 @@ export class AppComponent implements OnInit {
     this.currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
     this.currentDate = now.toLocaleDateString('fr-FR');
   }
-
+  
   ngOnInit() {
 
 

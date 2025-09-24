@@ -1,112 +1,116 @@
-  <h3 class="mb-4 fw-bold text-dark">
-    <i class="bi bi-people-fill me-2 text-secondary"></i> User Management
-  </h3>
+<h3 class="mb-4 fw-bold text-dark">
+  <i class="bi bi-people-fill me-2 text-secondary"></i> User Management
+</h3>
 
-  <!-- Add User Button -->
-  <button
-    type="button"
-    class="btn btn-outline-success mb-3 shadow-sm"
-    data-bs-toggle="modal"
-    data-bs-target="#userModal"
-    (click)="openAddModal()"
-  >
-    <i class="bi bi-plus-lg me-1"></i> Add User
-  </button>
+<!-- Add User Button -->
+<button
+  type="button"
+  class="btn btn-outline-success mb-3 shadow-sm"
+  data-bs-toggle="modal"
+  data-bs-target="#userModal"
+  (click)="openAddModal()"
+>
+  <i class="bi bi-plus-lg me-1"></i> Add User
+</button>
 
-  <!-- Add/Edit User Modal -->
-  <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content shadow-sm rounded-3 border-0">
-        <div class="modal-header bg-primary text-white rounded-top">
-          <h5 class="modal-title fw-bold">
-            <i class="bi bi-person-plus-fill me-2"></i>
-            {{ isEditMode ? 'Edit User' : 'Add User' }}
-          </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
+<!-- Add/Edit User Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-sm rounded-3 border-0">
+      <div class="modal-header bg-primary text-white rounded-top">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-person-plus-fill me-2"></i>
+          {{ isEditMode ? 'Edit User' : 'Add User' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
 
-        <div class="modal-body bg-white">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Username</label>
-              <input type="text" class="form-control shadow-sm" [(ngModel)]="selectedUser.username" name="username" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Full Name</label>
-              <input type="text" class="form-control shadow-sm" [(ngModel)]="selectedUser.fullName" name="fullName" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Email</label>
-              <input type="email" class="form-control shadow-sm" [(ngModel)]="selectedUser.email" name="email" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Password</label>
-              <input type="password" class="form-control shadow-sm" [(ngModel)]="selectedUser.password" name="password" [required]="!isEditMode">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Role</label>
-              <select class="form-select shadow-sm" [(ngModel)]="selectedUser.role" name="role" required>
-                <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
-              </select>
-            </div>
+      <div class="modal-body bg-white">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Username</label>
+            <input type="text" class="form-control shadow-sm" [(ngModel)]="selectedUser.username" name="username">
+            <small class="text-danger">{{ errors.username }}</small>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Full Name</label>
+            <input type="text" class="form-control shadow-sm" [(ngModel)]="selectedUser.fullName" name="fullName">
+            <small class="text-danger">{{ errors.fullName }}</small>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Email</label>
+            <input type="email" class="form-control shadow-sm" [(ngModel)]="selectedUser.email" name="email">
+            <small class="text-danger">{{ errors.email }}</small>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Password</label>
+            <input type="password" class="form-control shadow-sm" [(ngModel)]="selectedUser.password" name="password" placeholder="{{ isEditMode ? 'Leave blank to keep current password' : '' }}">
+            <small class="text-danger">{{ errors.password }}</small>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Role</label>
+            <select class="form-select shadow-sm" [(ngModel)]="selectedUser.role" name="role">
+              <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+            </select>
+            <small class="text-danger">{{ errors.role }}</small>
           </div>
         </div>
+      </div>
 
-        <div class="modal-footer bg-white">
-          <button type="button" class="btn btn-outline-secondary shadow-sm" data-bs-dismiss="modal">
-            <i class="bi bi-x-circle-fill me-1"></i> Cancel
-          </button>
-          <button type="button" class="btn btn-primary shadow-sm" (click)="saveUser()" data-bs-dismiss="modal">
-            <i class="bi bi-check-circle-fill me-1"></i> {{ isEditMode ? 'Save Changes' : 'Add User' }}
-          </button>
-        </div>
+      <div class="modal-footer bg-white">
+        <button type="button" class="btn btn-outline-secondary shadow-sm" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle-fill me-1"></i> Cancel
+        </button>
+        <button type="button" class="btn btn-primary shadow-sm" (click)="saveUser()">
+          <i class="bi bi-check-circle-fill me-1"></i> {{ isEditMode ? 'Save Changes' : 'Add User' }}
+        </button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Users Table -->
-  <div class="table-responsive mt-4 shadow-sm rounded-3 border bg-white">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="bg-light">
-        <tr>
-          <th>#</th>
-          <th>Username</th>
-          <th>Full Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Created At</th>
-          <th class="text-center">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of users; let i = index" class="align-middle">
-          <td>{{ i + 1 }}</td>
-          <td>{{ user.username }}</td>
-          <td>{{ user.fullName }}</td>
-          <td>{{ user.email }}</td>
-          <td>
-            <span 
-  class="badge"
-  [ngClass]="{
-    'bg-danger': user.role.includes('ADMIN'),
-    'bg-primary': user.role.includes('MANAGER'),
-    'bg-success': user.role.includes('USER')
-  }"
->
-  {{ user.role.replace('ROLE_', '') }}
-</span>
-
-          </td>
-          <td>{{ user.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
-          <td class="text-center">
-            <button class="btn btn-outline-warning btn-sm me-1 shadow-sm" data-bs-toggle="modal" data-bs-target="#userModal" (click)="openEditModal(user)">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <button class="btn btn-outline-danger btn-sm shadow-sm" (click)="deleteUser(user.id!)">
-              <i class="bi bi-trash3-fill"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<!-- Users Table -->
+<div class="table-responsive mt-4 shadow-sm rounded-3 border bg-white">
+  <table class="table table-hover align-middle mb-0">
+    <thead class="bg-light">
+      <tr>
+        <th>#</th>
+        <th>Username</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Created At</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users; let i = index" class="align-middle">
+        <td>{{ i + 1 }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.fullName }}</td>
+        <td>{{ user.email }}</td>
+        <td>
+          <span 
+            class="badge"
+            [ngClass]="{
+              'bg-danger': user.role.includes('ADMIN'),
+              'bg-primary': user.role.includes('MANAGER'),
+              'bg-success': user.role.includes('USER')
+            }"
+          >
+            {{ user.role.replace('ROLE_', '') }}
+          </span>
+        </td>
+        <td>{{ user.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td class="text-center">
+          <button class="btn btn-outline-warning btn-sm me-1 shadow-sm" data-bs-toggle="modal" data-bs-target="#userModal" (click)="openEditModal(user)">
+            <i class="bi bi-pencil-square"></i>
+          </button>
+          <button class="btn btn-outline-danger btn-sm shadow-sm" (click)="deleteUser(user.id!)">
+            <i class="bi bi-trash3-fill"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

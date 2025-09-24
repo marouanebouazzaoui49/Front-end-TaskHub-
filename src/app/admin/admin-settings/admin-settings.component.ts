@@ -13,6 +13,7 @@ export class AdminSettingsComponent implements OnInit {
     fullName: '',
     email: '',
     password: '',
+    oldPassword: '',   // <-- ajouté
     role: 'ROLE_USER'
   };
 
@@ -29,6 +30,7 @@ export class AdminSettingsComponent implements OnInit {
         this.user.fullName = data.fullName;
         this.user.email = data.email;
         this.user.role = data.role;
+        this.user.oldPassword = data.password; // <-- garder l'ancien mot de passe
       },
       error: (err) => console.error(err)
     });
@@ -40,7 +42,13 @@ export class AdminSettingsComponent implements OnInit {
       return;
     }
 
-    this.userService.updateUser(this.user.id, this.user).subscribe({
+    // Si password vide, utiliser l'ancien mot de passe
+    const payload: User = {
+      ...this.user,
+      password: this.user.password ? this.user.password : this.user.oldPassword
+    };
+
+    this.userService.updateUser(this.user.id, payload).subscribe({
       next: () => {
         this.successMessage = 'Profil mis à jour avec succès !';
         this.errorMessage = '';
