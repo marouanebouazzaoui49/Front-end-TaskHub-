@@ -1,0 +1,158 @@
+/* Container */
+.container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Card */
+.card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: slideUp 0.6s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 26px rgba(255, 115, 0, 0.12) !important;
+}
+
+/* Card header */
+.card-header.bg-orange {
+  background: linear-gradient(160deg, #373B44, #c2410c) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-header.bg-orange::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  transition: left 0.5s ease;
+}
+
+.card:hover .card-header.bg-orange::before {
+  left: 100%;
+}
+
+/* Inputs */
+.form-control {
+  transition: all 0.2s ease;
+  animation: fadeInRight 0.4s ease-out;
+}
+
+.form-control:focus {
+  border-color: #ff7300 !important;
+  box-shadow: 0 0 0 3px rgba(255, 115, 0, 0.25) !important;
+  transform: scale(1.02);
+}
+
+/* Labels */
+.form-label {
+  animation: fadeInLeft 0.4s ease-out;
+}
+
+/* Alerts */
+.alert {
+  animation: bounceIn 0.5s ease-out;
+  transform-origin: center;
+}
+
+/* Buttons */
+.btn-orange {
+  background: linear-gradient(160deg, #373B44, #c2410c) !important;
+  border: none !important;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.7s ease-out;
+}
+
+.btn-orange::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+}
+
+.btn-orange:hover {
+  background: linear-gradient(90deg, #1f961b, #00a116) !important;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 14px rgba(255, 115, 0, 0.25);
+}
+
+.btn-orange:hover::after {
+  width: 200px;
+  height: 200px;
+}
+
+.btn-orange:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Small text */
+.form-text {
+  animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
+/* Simple Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes fadeInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes fadeInLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-15px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes bounceIn {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.8); 
+  }
+  60% { 
+    opacity: 1; 
+    transform: scale(1.05); 
+  }
+  100% { 
+    transform: scale(1); 
+  }
+}

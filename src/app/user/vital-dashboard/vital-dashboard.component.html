@@ -1,0 +1,147 @@
+  <h2 class="mb-4 fw-bold section-title">
+    <i class="bi bi-shield-fill-exclamation me-2"></i> Vital Tasks
+  </h2>
+
+  <div class="filter-bar card card-body mb-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-lg-6 col-md-12">
+        <label for="searchText" class="form-label small mb-0 ms-1">Search</label>
+        <input type="text" id="searchText" class="form-control" placeholder="Search by title or description..."
+               [(ngModel)]="searchText" (input)="applyFilters()">
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <label for="projectFilter" class="form-label small mb-0 ms-1">Project</label>
+        <select id="projectFilter" class="form-select" [(ngModel)]="selectedProjectId" (change)="applyFilters()">
+          <option [ngValue]="''">All Projects</option>
+          <option *ngFor="let project of projectsForFilter" [ngValue]="project.id">{{ project.name }}</option>
+        </select>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <label for="priorityFilter" class="form-label small mb-0 ms-1">Priority</label>
+        <select id="priorityFilter" class="form-select" [(ngModel)]="selectedPriority" (change)="applyFilters()">
+          <option value="">All Priorities</option>
+          <option *ngFor="let priority of priorities" [value]="priority">{{ priority }}</option>
+        </select>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <label for="statusFilter" class="form-label small mb-0 ms-1">Status</label>
+        <select id="statusFilter" class="form-select" [(ngModel)]="selectedStatus" (change)="applyFilters()">
+          <option value="">All Statuses</option>
+          <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+        </select>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <label for="startDate" class="form-label small mb-0 ms-1">Created After</label>
+        <input type="date" id="startDate" class="form-control"
+               [(ngModel)]="selectedStartDate" (change)="applyFilters()">
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <label for="dueDate" class="form-label small mb-0 ms-1">Due Before</label>
+        <input type="date" id="dueDate" class="form-control"
+               [(ngModel)]="selectedDueDate" (change)="applyFilters()">
+      </div>
+    </div>
+  </div>
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border" role="status"></div>
+    <p class="mt-2 fw-semibold">Loading vital tasks...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger custom-alert d-flex align-items-center">
+    <i class="bi bi-x-circle-fill me-2"></i>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div *ngIf="!loading && filteredVitalTasks.length === 0" class="alert alert-info custom-alert text-center">
+    <i class="bi bi-info-circle me-2"></i> No vital tasks match your filters.
+  </div>
+
+  <div class="row">
+    <div *ngFor="let task of filteredVitalTasks" class="col-lg-4 col-md-6 mb-4">
+      <div class="card vital-card h-100 d-flex flex-column">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 card-title">{{ task.title }}</h5>
+          <span *ngIf="task.priority" class="badge priority-badge"
+                [ngClass]="{
+                  'high': task.priority === 'HIGH',
+                  'medium': task.priority === 'MEDIUM',
+                  'low': task.priority === 'LOW'
+                }">
+            {{ task.priority }}
+          </span>
+        </div>
+
+        <div class="card-body d-flex flex-column">
+          <div class="flex-grow-1">
+            <p class="mb-2 text-muted small">
+              <i class="bi bi-folder-fill me-2"></i>
+              <strong>Project:</strong> <span class="project-name ms-1">{{ getProjectName(task) }}</span>
+            </p>
+            <p class="mb-2 text-muted small">
+              <i class="bi bi-calendar2-plus me-2"></i>
+              <strong>Created on:</strong> {{ formatDate(task.createdAt) }}
+            </p>
+            <p class="text-muted mb-4">{{ task.description }}</p>
+          </div>
+
+          <div class="task-meta-data d-flex justify-content-between align-items-center mb-3">
+            <select *ngIf="task.status"
+                    class="form-select form-select-sm status-select"
+                    [(ngModel)]="task.status"
+                    (change)="onStatusChange(task)"
+                    [ngClass]="{
+                      'todo': task.status === 'TODO',
+                      'in-progress': task.status === 'IN_PROGRESS',
+                      'done': task.status === 'DONE'
+                    }">
+              <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+            </select>
+            <span *ngIf="task.dueDate" class="text-danger fw-semibold small">
+              <i class="bi bi-calendar-event ms-1"></i> {{ task.dueDate | date:'mediumDate' }}
+            </span>
+          </div>
+
+          <hr class="my-2">
+
+          <div *ngIf="getCommentsForTask(task.id!) as comments">
+           
+            <h6 class="fw-semibold small mb-2">
+              Comments ({{ comments.length }})
+            </h6>
+            <ul class="list-group list-group-flush mb-3" style="max-height: 150px; overflow-y: auto;">
+              <li *ngFor="let comment of comments" class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <div>
+                  <div class="d-flex align-items-center mb-1">
+                    <div class="avatar me-2">
+                      {{ getAuthorName(comment.authorId).charAt(0).toUpperCase() }}
+                    </div>
+                    <strong class="small">{{ getAuthorName(comment.authorId) }}</strong>
+                    <strong>:</strong>
+                  </div>
+                  <span class="small text-muted">{{ comment.content }}</span>
+                  <br>
+                  <small class="text-muted fst-italic">{{ formatDate(comment.createdAt) }}</small>
+                </div>
+                <button *ngIf="comment.authorId === currentUser?.id"
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="deleteComment(task.id!, comment.id!)"
+                        title="Delete comment">
+                  <i class="bi bi-trash3-fill"></i>
+                </button>
+              </li>
+            </ul>
+            <div *ngIf="comments.length === 0" class="text-center text-muted small fst-italic my-3">
+              No comments yet.
+            </div>
+            <div class="input-group">
+              <input type="text" class="form-control form-control-sm" placeholder="Add a comment..."
+                     [(ngModel)]="newComment[task.id!]" (keyup.enter)="addComment(task.id!)">
+              <button class="btn btn-sm btn-primary" (click)="addComment(task.id!)">
+                <i class="bi bi-send-fill"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

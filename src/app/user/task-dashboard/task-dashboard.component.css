@@ -1,0 +1,685 @@
+/* ==========================================================================
+   DASHBOARD COMPONENT - STYLE UNIFIÉ
+   Thème: Glassmorphism, Vibrant Orange
+   ========================================================================== */
+
+/* --- 1. Animations & Base --- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(249, 115, 22, 0.3); }
+  50% { box-shadow: 0 0 25px rgba(249, 115, 22, 0.5); }
+}
+
+@keyframes titlePulse {
+  0% { filter: drop-shadow(0 0 6px rgba(249,115,22,0.18)); transform: translateY(0); }
+  100% { filter: drop-shadow(0 0 14px rgba(249,115,22,0.28)); transform: translateY(-2px); }
+}
+
+@keyframes shimmerMove {
+  0% { left: -60%; }
+  100% { left: 120%; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* --- 2. Container et arrière-plan --- */
+.dashboard {
+  padding: 32px;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  right: -20%;
+  width: 50%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* --- 3. Titre principal avec animation --- */
+
+.dashboard-title {
+  display: inline-block;
+  font-weight: 800;
+  font-size: 2.5rem;
+  letter-spacing: -0.02em;
+  padding-bottom: 0.5rem;
+  background: linear-gradient(45deg, #f97316, #ea580c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.dashboard-title .bi {
+  background: linear-gradient(45deg, #f97316, #ea580c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- 4. Barre de filtres avec glassmorphism --- */
+/* --- 4. Barre de filtres simplifiée et flexible --- */
+.filters-container {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(249, 115, 22, 0.06);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* J'ai légèrement augmenté le "gap" pour une meilleure aération */
+  flex-wrap: wrap;
+  position: relative;
+  /* La propriété "justify-content" a été supprimée pour permettre aux éléments de s'étirer */
+}
+
+.filters-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 4px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #ea580c 0%, #f97316 40%, #fb923c 70%, #fdba74 100%);
+  transform: translateY(-50%);
+  box-shadow: 0 6px 18px rgba(249, 115, 22, 0.08);
+}
+
+/* Style unifié pour tous les groupes de filtres */
+.filters-container .filter-group,
+.filters-container .search-box {
+  flex: 1 1 160px; /* Chaque élément peut grandir et rétrécir, avec une base de 160px */
+}
+
+/* Le groupe de recherche prendra plus de place grâce à la classe flex-grow-1 dans le HTML */
+.filters-container .search-box {
+  flex-grow: 2; /* On peut lui donner un poids plus important */
+}
+
+
+.form-select,
+.form-control {
+  appearance: none;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: #1f2937;
+  border: 2px solid rgba(249, 115, 22, 0.14);
+  background: rgba(241, 245, 249, 0.8);
+  box-shadow: 0 6px 18px -10px rgba(249, 115, 22, 0.06);
+  transition: all 0.2s ease-in-out;
+  width: 100%; /* Important: les champs prennent toute la largeur de leur conteneur parent */
+  /* Les propriétés flex, min-width et max-width ont été retirées pour plus de flexibilité */
+}
+
+.form-select:hover,
+.form-select:focus,
+.form-control:hover,
+.form-control:focus {
+  transform: translateY(-3px);
+  border-color: #f97316;
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2);
+  outline: none;
+  background-color: #fff;
+}
+
+/*
+  Les styles spécifiques pour ".search-box", ".search-box .form-control",
+  et ".search-box::after" ont été SUPPRIMÉS.
+  Le champ de recherche utilisera maintenant les mêmes styles que ".form-control".
+*/
+
+/* --- 5. Cards avec effet glassmorphism --- */
+.custom-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(249, 115, 22, 0.06);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  transition: all 0.36s cubic-bezier(0.2, 0.9, 0.2, 1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07);
+  transform-style: preserve-3d;
+  will-change: transform;
+  border-top: 4px solid #f97316;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.custom-card:hover {
+  transform: translateY(-8px) rotateX(2deg) scale(1.01);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  height: 4px;
+  width: 60%;
+  background: linear-gradient(90deg, #ea580c, #f97316, #fb923c);
+  filter: blur(6px);
+  transition: left 560ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  opacity: 0.9;
+}
+
+.custom-card:hover::before {
+  left: 20%;
+}
+
+.card-header {
+  background: transparent;
+  border-bottom: 1px solid rgba(241, 245, 249, 0.8);
+  padding: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  position: relative;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+/* --- 6. Table avec hover animé --- */
+.table-responsive {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 14px 18px;
+  vertical-align: middle;
+  overflow: visible;
+  border: none;
+}
+
+.custom-table thead th {
+  background: linear-gradient(90deg, #fed7aa, #fb923c);
+  color: #7f2b0b;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.custom-table tbody tr {
+  background: linear-gradient(180deg, #fff 0%, #fffaf6 100%);
+  transition: all 0.26s cubic-bezier(0.2, 0.9, 0.2, 1);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.3);
+}
+
+.custom-table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(249, 115, 22, 0.12);
+  background: linear-gradient(180deg, #fffaf0 0%, #fff3e8 100%);
+}
+
+/* --- 7. Barre de progression avec shimmer --- */
+.progress {
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff7ed 0%, #fff2e6 100%);
+  padding: 2px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ea580c 0%, #f97316 40%, #fb923c 80%);
+  position: relative;
+  transition: width 500ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.progress-bar::after {
+  content: "";
+  position: absolute;
+  left: -60%;
+  top: 0;
+  height: 100%;
+  width: 60%;
+  transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.55) 60%, transparent 100%);
+  animation: shimmerMove 2.2s linear infinite;
+  pointer-events: none;
+  filter: blur(0.6px);
+}
+
+/* --- 8. Badges de priorité avec animations --- */
+.priority-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.26s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.priority-badge::before {
+  content: "";
+  position: absolute;
+  left: -120%;
+  top: -10%;
+  width: 40%;
+  height: 140%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+  transform: skewX(-20deg);
+  transition: left 420ms;
+}
+
+.priority-badge:hover::before {
+  left: 120%;
+}
+
+.priority-badge.high {
+  background: linear-gradient(180deg, #fee2e2, #fecaca);
+  color: #7f1d1d;
+}
+
+.priority-badge.medium {
+  background: linear-gradient(180deg, #fff7cc, #fde68a);
+  color: #92400e;
+}
+
+.priority-badge.low {
+  background: linear-gradient(180deg, #dcfce7, #bbf7d0);
+  color: #14532d;
+}
+
+/* --- 9. Sélecteur de statut --- */
+.status-select {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 2px solid rgba(249, 115, 22, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  min-width: 120px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: #1e293b;
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.08);
+  background: rgba(255, 255, 255, 1);
+}
+
+/* --- 10. Spinner avec double rotation --- */
+.spinner-border {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  position: relative;
+  border: 4px solid rgba(249, 115, 22, 0.08);
+  border-top-color: #f97316;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 6px 18px rgba(249, 115, 22, 0.12);
+}
+
+.spinner-border::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 3px solid rgba(251, 146, 60, 0.06);
+  border-top-color: rgba(251, 146, 60, 0.28);
+  animation: spin 2.2s linear infinite reverse;
+}
+
+/* --- 11. Listes avec glassmorphism --- */
+.custom-list .list-group-item {
+  background: rgba(249, 250, 251, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(229, 231, 235, 0.6);
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.custom-list .list-group-item:hover {
+  background: rgba(243, 244, 246, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* --- 12. Alertes --- */
+.alert {
+  border-radius: 16px;
+  border-width: 2px;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.alert-danger {
+  background: rgba(254, 226, 226, 0.9);
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+/* --- 13. Classes utilitaires Bootstrap --- */
+.d-flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.justify-content-between { justify-content: space-between; }
+.align-items-center { align-items: center; }
+.align-items-start { align-items: flex-start; }
+.flex-column { flex-direction: column; }
+.flex-md-row { flex-direction: row; }
+.gap-2 { gap: 0.5rem; }
+.mb-0 { margin-bottom: 0; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.me-2 { margin-right: 0.5rem; }
+.p-0 { padding: 0; }
+.p-5 { padding: 3rem; }
+.text-muted { color: #6b7280; }
+.text-center { text-align: center; }
+.fw-bold { font-weight: 700; }
+.small { font-size: 0.875rem; }
+
+/* --- 14. Badges spéciaux --- */
+.badge {
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* --- 15. Input Groups --- */
+.input-group {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  width: 100%;
+}
+
+.input-group-sm > .form-control,
+.input-group-sm > .form-select {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+}
+
+/* --- 16. États vides et de chargement --- */
+.text-center.p-5.text-muted {
+  background: rgba(249, 250, 251, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.6);
+}
+
+.text-center.p-5.text-muted i {
+  background: linear-gradient(45deg, #d1d5db, #9ca3af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- 17. Responsive Design --- */
+@media (max-width: 1100px) {
+  .filters-container .form-select,
+  .filters-container .form-control {
+    min-width: 110px;
+    max-width: 140px;
+  }
+  
+  .search-box {
+    flex: 0 0 190px;
+    max-width: 190px;
+  }
+}
+
+@media (max-width: 860px) {
+  .dashboard {
+    padding: 18px;
+  }
+  
+  .dashboard-title {
+    font-size: 1.45rem;
+  }
+  
+  .filters-container {
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 1.5rem;
+  }
+  
+  .search-box {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+  
+  .custom-table th,
+  .custom-table td {
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .dashboard {
+    padding: 16px;
+  }
+  
+  .dashboard-title {
+    font-size: 1.25rem;
+    text-align: left;
+  }
+  
+  .filters-container .form-select,
+  .filters-container .form-control {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+  
+  .search-box {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+  
+  .card-header,
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .custom-table th,
+  .custom-table td {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .priority-badge {
+    font-size: 0.65rem;
+    padding: 4px 8px;
+  }
+  
+  .status-select {
+    font-size: 0.8rem;
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .d-flex.flex-column.flex-md-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .d-flex.flex-column.flex-md-row .me-2 {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .custom-list .list-group-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* --- 18. Animation d'entrée décalée pour les éléments --- */
+.row > div {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.row > div:nth-child(1) { animation-delay: 0.1s; }
+.row > div:nth-child(2) { animation-delay: 0.2s; }
+.row > div:nth-child(3) { animation-delay: 0.3s; }
+
+/* --- 19. Focus states pour l'accessibilité --- */
+.form-select:focus-visible,
+.form-control:focus-visible,
+.status-select:focus-visible {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
+}
+
+/* --- 20. Amélioration des contrastes --- */
+.text-muted.small {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.fw-bold {
+  color: #1e293b;
+}
+
+/* --- 21. Styles spécifiques pour les colonnes du dashboard --- */
+.col-lg-8,
+.col-lg-4 {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.col-lg-8 {
+  animation-delay: 0.2s;
+}
+
+.col-lg-4 {
+  animation-delay: 0.4s;
+}
+
+/* --- 22. Personnalisation des éléments de formulaire --- */
+.form-select option {
+  background-color: #fff;
+  color: #1e293b;
+  padding: 0.5rem;
+}
+
+.form-control::placeholder {
+  color: #9ca3af;
+  opacity: 0.8;
+}
+/* ==============================
+   ANIMATION POUR LES <p>
+   ============================== */
+p.text-muted, p.mt-2, p.mb-0 {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.6s forwards;
+  animation-delay: 0.2s; /* Ajuster le délai si nécessaire */
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==============================
+   ANIMATION BARRE DE FILTRES
+   ============================== */
+.filters-container {
+  opacity: 0;
+  transform: translateY(-15px);
+  animation: slideDownFade 0.6s forwards 0.1s;
+}
+
+@keyframes slideDownFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==============================
+   HOVER subtil pour inputs/select
+   ============================== */
+.filters-container .form-control,
+.filters-container .form-select {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filters-container .form-control:hover,
+.filters-container .form-select:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}

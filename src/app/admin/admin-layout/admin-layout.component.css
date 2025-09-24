@@ -1,0 +1,261 @@
+/* ===============================================
+   1. Sidebar - Style Bleu Professionnel
+   =============================================== */
+.admin-sidebar {
+  width: 260px;
+  background: linear-gradient(160deg, #373B44, #4286f4); /* Dégradé de gris foncé à bleu */
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: fixed;
+  z-index: 1010;
+  transition: width 0.5s ease, background 0.5s ease;
+  overflow: hidden;
+}
+.admin-sidebar.collapsed {
+  width: 80px;
+}
+
+/* Logo animé */
+.sidebar-header .logo {
+    filter: brightness(0) invert(1);
+
+  max-width: 130px;
+  margin: 0 auto;
+  transition: transform 0.6s ease;
+}
+.sidebar-header .logo:hover {
+  transform: rotate(-12deg) scale(1.2);
+}
+
+/* Profil utilisateur */
+.user-profile {
+  text-align: center;
+  padding: 0 1rem;
+}
+.profile-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15); /* Plus subtil */
+  margin: 0 auto 0.5rem auto;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  cursor: pointer;
+}
+.profile-circle:hover {
+  transform: scale(1.15) rotate(6deg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Badge Admin bleu */
+.user-role.admin-role {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: #ff1e00; /* Badge en bleu vif */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+.user-role.admin-role:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+}
+
+/* Menu avec micro-animation */
+.nav-link {
+  color: #fff;
+  font-weight: 500;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+.nav-link span,
+.nav-link i {
+  position: relative;
+  z-index: 1;
+}
+.nav-link:hover {
+  transform: translateX(6px);
+  background: rgba(255, 255, 255, 0.1);
+}
+.nav-link:active {
+  transform: translateX(2px) scale(0.98);
+}
+.nav-link.active {
+  background: #fff;
+  color: #373B44; /* Texte en couleur foncée pour le contraste */
+  font-weight: 600;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Logout fixé en bas - Style plus discret */
+.sidebar-logout {
+  padding: 1rem;
+  margin-top: auto;
+}
+.btn-logout {
+  width: 100%;
+  border-radius: 50px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1); /* Bouton transparent */
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.4s ease;
+}
+.btn-logout:hover {
+  background: #fff; /* Devient blanc au survol */
+  color: #373B44; /* Texte foncé */
+  border-color: #fff;
+}
+
+/* ===============================================
+   2. Topbar - Style Épuré
+   =============================================== */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: #fff; /* Fond blanc simple */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Ombre plus douce */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Cercle profil topbar */
+.profile-circle-sm {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #4286f4; /* Assorti au thème */
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.profile-circle-sm:hover {
+  transform: scale(1.15) rotate(3deg);
+  box-shadow: 0 6px 25px rgba(66, 134, 244, 0.4);
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #eee;
+}
+.dropdown-item:active {
+  background-color: #4286f4; /* Assorti au thème */
+  color: #fff;
+}
+
+/* ===============================================
+   3. Contenu principal et Formulaires
+   =============================================== */
+.admin-content {
+  flex: 1;
+  margin-left: 260px;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.5s ease;
+}
+.admin-content main {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  background-color: #f8f9fa; /* Fond légèrement gris */
+}
+.admin-sidebar.collapsed ~ .admin-content {
+  margin-left: 80px;
+}
+
+/* Style pour la section "Profile Settings" (en-tête et bouton) */
+.profile-settings-header { /* Ajoutez cette classe à votre bandeau orange */
+  background: linear-gradient(90deg, #373B44, #4286f4);
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: -1px; /* Pour une transition parfaite avec le contenu */
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+.card { /* Style général pour le conteneur du formulaire */
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.form-control:focus {
+  border-color: #4286f4;
+  box-shadow: 0 0 0 3px rgba(66, 134, 244, 0.25);
+}
+.btn-update-profile { /* Ajoutez cette classe à votre bouton "Update Profile" */
+  background-color: #4286f4;
+  border-color: #4286f4;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(66, 134, 244, 0.3);
+}
+.btn-update-profile:hover {
+  background-color: #3367d6; /* Bleu plus foncé au survol */
+  border-color: #3367d6;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(66, 134, 244, 0.4);
+}
+
+
+/* ===============================================
+   4. Responsive (inchangé)
+   =============================================== */
+@media (max-width: 992px) {
+  .admin-sidebar {
+    left: -260px;
+    top: 0;
+    height: 100vh;
+    transition: left 0.5s ease;
+  }
+  .admin-sidebar.show {
+    left: 0;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+  }
+  .admin-content {
+    margin-left: 0;
+  }
+  .sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1005;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .sidebar-backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

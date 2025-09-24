@@ -1,0 +1,287 @@
+/* Container principal */
+.container {
+  animation: fadeIn 0.8s ease-out;
+}
+
+/* Logo */
+.container .row:first-child img {
+  animation: bounceIn 1s ease-out;
+  transition: transform 0.3s ease;
+}
+
+.container .row:first-child img:hover {
+  transform: scale(1.05) rotate(2deg);
+}
+
+/* Image illustration */
+.col-md-6 img {
+  animation: slideInLeft 0.8s ease-out;
+  transition: transform 0.3s ease;
+}
+
+.col-md-6 img:hover {
+  transform: scale(1.02);
+}
+
+/* Card de connexion */
+.card {
+  animation: slideInRight 0.8s ease-out;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #FF7300, transparent);
+  transition: left 0.6s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(255, 115, 0, 0.15) !important;
+}
+
+.card:hover::before {
+  left: 100%;
+}
+
+/* Titre Sign In */
+h3 {
+  animation: fadeInDown 0.6s ease-out 0.3s both;
+  position: relative;
+}
+
+h3::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: #FF7300;
+  transition: width 0.4s ease;
+}
+
+.card:hover h3::after {
+  width: 60px;
+}
+
+/* Alert */
+.alert {
+  animation: shake 0.6s ease-out;
+  transform-origin: center;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Inputs */
+.form-control {
+  animation: slideInUp 0.5s ease-out;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.form-control:nth-of-type(1) { animation-delay: 0.4s; }
+.form-control:nth-of-type(2) { animation-delay: 0.5s; }
+
+.form-control:focus {
+  transform: scale(1.02);
+  box-shadow: 0 0 0 3px rgba(255, 115, 0, 0.25) !important;
+  border-color: #FF7300 !important;
+}
+
+.form-control:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Bouton Sign In */
+.btn {
+  animation: slideInUp 0.6s ease-out 0.6s both;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+}
+
+.btn:hover {
+  background-color: #e06500 !important;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(255, 115, 0, 0.3);
+}
+
+.btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Lien Sign Up */
+p {
+  animation: fadeIn 0.6s ease-out 0.8s both;
+}
+
+p a {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+p a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #FF7300;
+  transition: width 0.3s ease;
+}
+
+p a:hover {
+  text-decoration: none !important;
+  transform: translateY(-1px);
+}
+
+p a:hover::after {
+  width: 100%;
+}
+
+/* Animation du formulaire entier */
+form {
+  animation: fadeIn 0.6s ease-out 0.5s both;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInDown {
+  from { 
+    opacity: 0; 
+    transform: translateY(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes slideInLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slideInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slideInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes bounceIn {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.3) rotate(-10deg); 
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.1) rotate(5deg); 
+  }
+  70% { 
+    transform: scale(0.95) rotate(-2deg); 
+  }
+  100% { 
+    transform: scale(1) rotate(0deg); 
+  }
+}
+
+/* Responsive animations */
+@media (max-width: 768px) {
+  .col-md-6 img {
+    animation: none;
+  }
+  
+  .card {
+    animation: slideInUp 0.8s ease-out;
+  }
+  
+  .card:hover {
+    transform: translateY(-4px);
+  }
+}
+/* Labels flottants adaptés à ton style */
+.floating-label {
+  position: absolute;
+  top: 50%;
+  left: 20px; /* léger décalage pour correspondre à tes inputs */
+  transform: translateY(-50%);
+  color: #999; /* plus doux que #aaa pour ton thème */
+  font-weight: 500;
+  pointer-events: none;
+  transition: 0.3s ease all;
+  background-color: white;
+  padding: 0 5px;
+  border-radius: 3px;
+}
+
+/* Lorsque le champ est focus ou rempli */
+.form-control:focus + .floating-label,
+.form-control:not(:placeholder-shown) + .floating-label {
+  top: -10px; /* label monte */
+  left: 10px; /* léger ajustement */
+  font-size: 0.85rem; /* un peu plus gros pour lisibilité */
+  color: #FF7300; /* ton orange principal */
+  font-weight: 600;
+  box-shadow: 0 0 0 0 rgba(255, 115, 0, 0); /* optionnel, garde la cohérence */
+  transition: 0.3s ease all;
+}
+

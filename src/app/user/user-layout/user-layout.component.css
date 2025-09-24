@@ -1,0 +1,252 @@
+/* ===============================================
+   1. Sidebar - Style Orange Professionnel
+   =============================================== */
+.user-sidebar {
+  width: 260px;
+  background: linear-gradient(160deg, #373B44, #c2410c); 
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: fixed;
+  z-index: 1010;
+  transition: width 0.5s ease, background 0.5s ease, left 0.5s ease;
+  overflow: hidden;
+}
+
+.user-sidebar.collapsed {
+  width: 80px;
+}
+
+.user-sidebar.show {
+  left: 0;
+}
+
+/* Logo animé */
+.user-sidebar .logo {
+  filter: brightness(0) invert(1);
+  max-width: 130px;
+  margin: 0 auto;
+  transition: transform 0.6s ease;
+}
+.user-sidebar .logo:hover {
+  transform: rotate(-12deg) scale(1.2);
+}
+
+/* Profil utilisateur */
+.user-profile {
+  text-align: center;
+  padding: 0 1rem;
+}
+.profile-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 auto 0.5rem auto;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  cursor: pointer;
+}
+.profile-circle:hover {
+  transform: scale(1.15) rotate(6deg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Menu avec micro-animation */
+.nav-link {
+  color: #fff;
+  font-weight: 500;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+.nav-link span,
+.nav-link i {
+  position: relative;
+  z-index: 1;
+}
+.nav-link:hover {
+  transform: translateX(6px);
+  background: rgba(255, 255, 255, 0.1);
+}
+.nav-link:active {
+  transform: translateX(2px) scale(0.98);
+}
+.nav-link.active-menu {
+  background: #fff;
+  color: #373B44;
+  font-weight: 600;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Logout fixé en bas */
+.user-sidebar .sidebar-logout {
+  margin-top: auto;
+}
+.user-sidebar .btn-logout {
+  width: 100%;
+  border-radius: 50px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.4s ease;
+}
+.user-sidebar .btn-logout:hover {
+  background: #fff;
+  color: #373B44;
+  border-color: #fff;
+}
+
+/* ===============================================
+   2. Topbar - Style Épuré
+   =============================================== */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1.5rem;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Profil topbar */
+.profile-circle.small-profile {
+  width: 38px;
+  height: 38px;
+  background: #562909;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.profile-circle.small-profile:hover {
+  transform: scale(1.15) rotate(3deg);
+  box-shadow: 0 6px 25px rgba(249, 115, 22, 0.4);
+}
+
+/* ===============================================
+   3. Contenu principal
+   =============================================== */
+.user-content {
+  flex: 1;
+  margin-left: 260px;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.5s ease;
+}
+.user-content main {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+}
+.user-sidebar.collapsed ~ .user-content {
+  margin-left: 80px;
+}
+
+/* ===============================================
+   4. Profile Settings / Cards / Form
+   =============================================== */
+.profile-settings-header {
+  background: linear-gradient(90deg, #373B44, #c2410c);
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: -1px;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+.card {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.form-control:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.25);
+}
+.btn-update-profile {
+  background-color: #f97316;
+  border-color: #f97316;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+}
+.btn-update-profile:hover {
+  background-color: #ea580c;
+  border-color: #ea580c;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+}
+
+/* ===============================================
+   5. Overlay mobile
+   =============================================== */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1005;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.sidebar-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ===============================================
+   6. Responsive
+   =============================================== */
+@media (max-width: 992px) {
+  .user-sidebar {
+    left: -260px;
+    top: 0;
+    height: 100vh;
+    transition: left 0.5s ease;
+  }
+
+  .user-sidebar.collapsed {
+    width: 260px; /* Collapsed desktop ignored on mobile */
+  }
+
+  .user-content {
+    margin-left: 0;
+  }
+}
+.dropdown .btn {
+  display: flex; align-items: center; gap: 0.5rem; font-weight: 500;
+  background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 0.25rem 0.75rem;
+  transition: all 0.3s ease;
+}
+.dropdown .btn:hover { background: #f8f9fa; }
+.dropdown-menu { border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+.dropdown-menu a.dropdown-item {
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.dropdown-menu a.dropdown-item:hover { background: #f97316; color: #fff; }
+
+

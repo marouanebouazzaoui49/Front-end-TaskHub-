@@ -1,0 +1,191 @@
+  <div class="header">
+    <div class="header-left">
+      <h1 class="main-title">
+       📋 Your Tasks
+      </h1>
+      <p class="subtitle-text">Manage all your tasks efficiently!</p>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters-container">
+    <!-- Project Filter -->
+    <div class="filter-group">
+      <label for="project-filter"><i class="fas fa-folder"></i> Project</label>
+      <select id="project-filter" [(ngModel)]="selectedProjectId" (ngModelChange)="filterTasks()" class="filter-select">
+        <option [value]="''">All projects</option>
+        <option *ngFor="let project of projectsForFilter" [value]="project.id">{{ project.name }}</option>
+      </select>
+    </div>
+
+    <!-- Type Filter -->
+    <div class="filter-group">
+      <label for="type-filter"><i class="fas fa-heartbeat"></i> Type</label>
+      <select id="type-filter" [(ngModel)]="selectedVital" (ngModelChange)="filterTasks()" class="filter-select">
+        <option [ngValue]="''">All types</option>
+        <option [ngValue]="true">VITAL</option>
+        <option [ngValue]="false">NORMAL</option>
+      </select>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="filter-group">
+      <label for="status-filter"><i class="fas fa-flag"></i> Status</label>
+      <select id="status-filter" [(ngModel)]="selectedStatus" (ngModelChange)="filterTasks()" class="filter-select">
+        <option value="">All statuses</option>
+        <option *ngFor="let status of statuses" [value]="status">{{ status | uppercase }}</option>
+      </select>
+    </div>
+
+    <!-- Priority Filter -->
+    <div class="filter-group">
+      <label for="priority-filter"><i class="fas fa-exclamation-triangle"></i> Priority</label>
+      <select id="priority-filter" [(ngModel)]="selectedPriority" (ngModelChange)="filterTasks()" class="filter-select">
+        <option value="">All priorities</option>
+        <option *ngFor="let priority of priorities" [value]="priority">{{ priority | uppercase }}</option>
+      </select>
+    </div>
+
+    <!-- Date Filters -->
+    <div class="filter-group">
+      <label for="start-date-filter"><i class="fas fa-calendar-plus"></i> Created After</label>
+      <input id="start-date-filter" type="date" [(ngModel)]="selectedStartDate" (ngModelChange)="filterTasks()" class="filter-select">
+    </div>
+
+    <div class="filter-group">
+      <label for="due-date-filter"><i class="fas fa-calendar-times"></i> Due Before</label>
+      <input id="due-date-filter" type="date" [(ngModel)]="selectedDueDate" (ngModelChange)="filterTasks()" class="filter-select">
+    </div>
+
+    <!-- Search Filter -->
+    <div class="filter-group search-group">
+      <label for="search-filter"><i class="fas fa-search"></i> Search</label>
+      <input id="search-filter" type="text" placeholder="Search in tasks..." [(ngModel)]="searchText" (ngModelChange)="filterTasks()" class="filter-select">
+    </div>
+  </div>
+
+  <!-- Loading / Empty state -->
+  <div *ngIf="loading" class="loading">
+    <i class="fas fa-spinner"></i>
+    <div>Loading tasks...</div>
+  </div>
+
+  <div *ngIf="!loading && filteredTasks.length === 0" class="empty-state">
+    <i class="fas fa-inbox"></i>
+    <div>No tasks found for your account</div>
+  </div>
+
+  <!-- Kanban Board -->
+  <div class="tasks-board" *ngIf="!loading && filteredTasks.length > 0" cdkDropListGroup>
+    <div class="status-column"
+         *ngFor="let status of statuses"
+         cdkDropList
+         [cdkDropListData]="tasksByStatus[status]"
+         (cdkDropListDropped)="drop($event, status)"
+         [ngClass]="{'drag-over': dragOverStatus===status}"
+         style="max-height: 600px; overflow-y: auto;">
+
+      <div class="status-title">{{ status | uppercase }}</div>
+
+      <div class="task-list">
+        <div *ngFor="let task of tasksByStatus[status]" cdkDrag class="task-card-wrapper">
+          <div class="task-card"
+               [ngClass]="{
+                 'task-todo': task.status==='TODO',
+                 'task-inprogress': task.status==='IN_PROGRESS',
+                 'task-done': task.status==='DONE',
+                 'vital': task.vital
+               }">
+            <div class="task-header">
+              <h2 class="task-title">{{ task.title }}</h2>
+            </div>
+
+            <div class="task-body">
+              <label class="task-label">Description:</label>
+              <p class="task-description">{{ task.description }}</p>
+
+              <div class="info-row">
+                <div class="info-label"><i class="fas fa-project-diagram"></i> Project:</div>
+                <div class="info-value">{{ projectMap[task.projectId] || 'Unknown' }}</div>
+              </div>
+
+              <div class="info-row">
+                <div class="info-label"><i class="fas fa-heartbeat"></i> Type:</div>
+                <div class="info-value">
+                  <span *ngIf="task.vital" class="badge-vital">VITAL</span>
+                  <span *ngIf="!task.vital" class="badge-normal">NORMAL</span>
+                </div>
+              </div>
+
+              <!-- CHANGEMENT DE STATUT DIRECT -->
+              <div class="info-row">
+                <div class="info-label"><i class="fas fa-flag"></i> Status:</div>
+                <div class="info-value">
+                  <select class="status-select"
+                          [ngClass]="'status-' + task.status.toLowerCase().replace('_','')"
+                          [(ngModel)]="task.status"
+                          (ngModelChange)="updateTaskStatus(task)">
+                    <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="info-row">
+                <div class="info-label"><i class="fas fa-exclamation-triangle"></i> Priority:</div>
+                <div class="info-value">
+                  <span class="priority-badge" [ngClass]="'priority-' + task.priority.toLowerCase()">
+                    {{ task.priority }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="info-row">
+                <div class="info-label"><i class="fas fa-calendar-plus"></i> Created at:</div>
+                <div class="info-value">{{ formatDate(task.createdAt) }}</div>
+              </div>
+
+              <div class="info-row">
+                <div class="info-label"><i class="fas fa-calendar-times"></i> Due date:</div>
+                <div class="info-value">{{ formatDate(task.dueDate) }}</div>
+              </div>
+
+              <hr class="divider">
+
+              <!-- Comments Section -->
+              <div class="comments-section">
+                
+                <h6><i class="fas fa-comments"></i> Comments ({{ getCommentsForTask(task.id).length }})</h6>
+                <ul class="list-group list-group-flush mb-3">
+                  <li *ngFor="let comment of getCommentsForTask(task.id)" class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <div>
+                      <div class="d-flex align-items-center mb-1">
+                        <div class="avatar me-2">
+                          {{ getAuthorName(comment.authorId).charAt(0).toUpperCase() }}
+                        </div>
+                        <strong class="small">{{ getAuthorName(comment.authorId) }}</strong> :
+                      </div>
+                      <span class="small text-muted">{{ comment.content }}</span>
+                      <br>
+                      <small class="text-muted fst-italic">{{ formatDate(comment.createdAt) }}</small>
+                    </div>
+                    <button *ngIf="comment.authorId === currentUser?.id"
+                            class="delete-comment-btn"
+                            (click)="deleteComment(task.id!, comment.id!)">
+                      <i class="bi bi-trash3-fill"></i>
+                    </button>
+                  </li>
+                </ul>
+
+                <div class="add-comment">
+                  <input type="text" class="comment-input" [(ngModel)]="newComment[task.id]" placeholder="Add a comment..." (keyup.enter)="addComment(task.id)">
+                  <button class="add-comment-btn" (click)="addComment(task.id)" type="button"><i class="fas fa-paper-plane"></i> Send</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="tasksByStatus[status].length === 0" class="text-center mt-2">No tasks</div>
+    </div>
+  </div>

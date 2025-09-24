@@ -1,0 +1,214 @@
+  <div class="dashboard-header">
+    <div class="mb-2 mb-md-0">
+      <h2 class="fw-bold dashboard-title">🖥️ Your Dashboard</h2>
+      <p class="text-muted small m-0">
+        Track and manage your tasks at a glance.
+      </p>
+    </div>
+  </div>
+
+  <div class="filters-container d-flex flex-wrap align-items-center gap-2 mt-4">
+    
+    <div class="search-box flex-grow-1">
+      <label for="searchFilter" class="visually-hidden">Search tasks</label>
+      <input
+        id="searchFilter"
+        type="text"
+        [(ngModel)]="searchQuery"
+        (input)="applyFilter()"
+        class="form-control"
+        placeholder="Search tasks..."
+      />
+    </div>
+    
+    <div class="filter-group">
+      <label for="projectFilter" class="visually-hidden">Filter by Project</label>
+      <select
+        id="projectFilter"
+        [(ngModel)]="filterProjectId"
+        (change)="applyFilter()"
+        class="form-select form-select-sm"
+      >
+        <option value="">All Projects</option>
+        <option
+          *ngFor="let project of userAssignedProjects"
+          [value]="project.id"
+        >
+          {{ project.name }}
+        </option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="statusFilter" class="visually-hidden">Filter by Status</label>
+      <select
+        id="statusFilter"
+        [(ngModel)]="filterStatus"
+        (change)="applyFilter()"
+        class="form-select form-select-sm"
+      >
+        <option value="">All Statuses</option>
+        <option value="TODO">To Do</option>
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="DONE">Done</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="priorityFilter" class="visually-hidden">Filter by Priority</label>
+      <select
+        id="priorityFilter"
+        [(ngModel)]="filterPriority"
+        (change)="applyFilter()"
+        class="form-select form-select-sm"
+      >
+        <option value="">All Priorities</option>
+        <option value="LOW">Low</option>
+        <option value="MEDIUM">Medium</option>
+        <option value="HIGH">High</option>
+      </select>
+    </div>
+
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-lg-8 mb-4">
+      <div class="card custom-card">
+        <div class="card-header">
+          <h5 class="mb-0">📋 Active Tasks</h5>
+        </div>
+        <div class="card-body p-0">
+          <div *ngIf="loading" class="text-center p-5">
+            <div class="spinner-border"></div>
+            <p class="mt-2 text-muted">Loading tasks...</p>
+          </div>
+
+          <div *ngIf="errorMessage" class="alert alert-danger m-3 text-center">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ errorMessage }}
+          </div>
+
+          <div
+            class="table-responsive"
+            *ngIf="!loading && !errorMessage && filteredTasks.length > 0"
+          >
+            <table class="table custom-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Project</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th>Due</th>
+                  <th>Priority</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let task of filteredTasks">
+                  <td>
+                    <strong>{{ task.title }}</strong>
+                  </td>
+                  <td>{{ getProjectName(task) }}</td>
+                  <td>
+                    <select
+                      class="form-select form-select-sm status-select"
+                      [(ngModel)]="task.status"
+                      (change)="onStatusChange(task)"
+                      attr.aria-label="Change status for task {{ task.title }}"
+                    >
+                      <option value="TODO">To Do</option>
+                      <option value="IN_PROGRESS">In Progress</option>
+                      <option value="DONE">Done</option>
+                    </select>
+                  </td>
+                  <td>{{ task.createdAt | date : "mediumDate" }}</td>
+                  <td>{{ task.dueDate | date : "mediumDate" }}</td>
+                  <td>
+                    <span
+                      class="badge priority-badge"
+                      [ngClass]="{
+                        high: task.priority === 'HIGH',
+                        medium: task.priority === 'MEDIUM',
+                        low: task.priority === 'LOW'
+                      }"
+                      >{{ task.priority | titlecase }}</span
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div
+            *ngIf="!loading && !errorMessage && filteredTasks.length === 0"
+            class="text-center p-5 text-muted"
+          >
+            <i class="bi bi-check2-circle fs-2"></i>
+            <p class="mt-2">No tasks match your current filters.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card custom-card mb-4">
+        <div class="card-header">
+          <h6 class="mb-0">📊 Task Progress</h6>
+        </div>
+        <div class="card-body text-center">
+          <h3 class="fw-bold dashboard-title">
+            {{ progressPercentage | number : "1.0-0" }}%
+          </h3>
+          <div class="progress mb-2">
+            <div
+              class="progress-bar"
+              role="progressbar"
+              [style.width.%]="progressPercentage"
+            ></div>
+          </div>
+          <p class="text-muted small mb-0">
+            {{ completedTasks.length }} of
+            {{ filteredTasks.length + completedTasks.length }} tasks completed
+          </p>
+        </div>
+      </div>
+
+      <div class="card custom-card">
+        <div class="card-header">
+          <h6 class="mb-0">✅ Recently Completed</h6>
+        </div>
+        <div class="card-body p-0">
+          <ul class="list-group custom-list">
+            <li
+              *ngFor="let task of completedTasks | slice : 0 : 5"
+              class="list-group-item"
+            >
+              <div
+                class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2"
+              >
+                <strong class="me-2">{{ task.title }}</strong>
+                <span class="text-muted small" *ngIf="task.completedAt">
+                  Done: {{ task.completedAt | date : "mediumDate" }}
+                </span>
+                <span
+                  class="badge"
+                  style="
+                    background: linear-gradient(90deg, #81c784, #388e3c);
+                    color: #fff;
+                  "
+                >
+                  Done
+                </span>
+              </div>
+            </li>
+            <li
+              *ngIf="completedTasks.length === 0"
+              class="list-group-item text-center text-muted"
+            >
+              No completed tasks yet.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,159 @@
+<div class="container mt-4">
+  <!-- HEADER -->
+  <div class="dashboard-header  mb-4">
+    <h2 class="dashboard-title fw-bold">
+      <i class="bi bi-kanban-fill me-2"></i> Project Dashboard
+    </h2>
+    <p class="dashboard-subtitle">Manage and track your projects easily.</p>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-warning mb-3" role="status"></div>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <!-- FILTERS -->
+    <div class="card filter-card shadow-sm mb-4 p-3">
+      <div class="row g-3">
+        <div class="col-lg-3">
+          <label class="form-label fw-semibold">Status</label>
+          <select class="form-select" [(ngModel)]="filterStatus" (change)="onFilterChange()">
+            <option value="ALL">All</option>
+            <option value="PLANNED">Planned</option>
+            <option value="ACTIVE">Active</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="ARCHIVED">Archived</option>
+            <option value="TODO">Task: To Do</option>
+            <option value="IN_PROGRESS">Task: In Progress</option>
+            <option value="DONE">Task: Done</option>
+          </select>
+        </div>
+        <div class="col-lg-3">
+          <label class="form-label fw-semibold">Priority</label>
+          <select class="form-select" [(ngModel)]="filterPriority" (change)="onFilterChange()">
+            <option value="ALL">All</option>
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+          </select>
+        </div>
+        <div class="col-lg-3">
+          <label class="form-label fw-semibold">Search</label>
+          <input class="form-control" type="text" [(ngModel)]="searchQuery" (input)="onFilterChange()" placeholder="Search projects...">
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-6 g-3 mb-4">
+      <div class="col" *ngFor="let stat of [
+          { icon: 'bi-list-task', value: stats.totalTasks, label: 'Total Tasks' },
+          { icon: 'bi-hourglass-split', value: stats.inProgressTasks, label: 'In Progress' },
+          { icon: 'bi-calendar-x', value: stats.overdueTasks, label: 'Overdue' },
+          { icon: 'bi-folder-symlink', value: stats.activeProjects, label: 'Active Projects' },
+          { icon: 'bi-check2-circle', value: stats.completedProjects, label: 'Completed' },
+          { icon: 'bi-person-check-fill', value: stats.topAssignee.name + ' (' + stats.topAssignee.count + ')', label: 'Top Assignee' }
+        ]">
+        <div class="card stat-card shadow-sm text-center p-3 h-100">
+          <div class="stat-icon"><i class="bi" [ngClass]="stat.icon"></i></div>
+          <div class="stat-value">{{ stat.value }}</div>
+          <div class="stat-label">{{ stat.label }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECT CARDS -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <div class="col" *ngFor="let p of filteredProjects">
+        <div class="card project-card shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h4 class="project-title">{{ p.name }}</h4>
+              <span class="badge text-uppercase"
+                [ngClass]="{
+                  'bg-primary': p.status === 'PLANNED',
+                  'bg-warning text-dark': p.status === 'ACTIVE',
+                  'bg-success': p.status === 'COMPLETED',
+                  'bg-secondary': p.status === 'ARCHIVED'
+                }">
+                {{ p.status }}
+              </span>
+            </div>
+            <p class="text-muted">{{ p.description }}</p>
+            <div class="small text-muted d-flex justify-content-between">
+              <span><i class="bi bi-list-check me-1"></i>{{ p.taskCount }} Tasks</span>
+              <span><i class="bi bi-check2-all me-1"></i>{{ p.completedTaskCount }} Done</span>
+            </div>
+            <div class="progress mt-2">
+              <div class="progress-bar" [style.width.%]="p.completionPercentage"></div>
+            </div>
+          </div>
+          <div class="card-footer bg-white border-0 text-end">
+            <button class="btn btn-sm btn-outline-primary" (click)="openProjectModal(p)">
+              <i class="bi bi-eye me-1"></i> View Project
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredProjects.length === 0" class="text-center my-5">
+      <p class="text-muted">No projects found. Try changing filters.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="projectModalLabel">{{ selectedProject?.name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedProject">
+        <p>{{ selectedProject.description }}</p>
+        <span class="badge" [ngClass]="{
+          'bg-primary': selectedProject.status === 'PLANNED',
+          'bg-warning text-dark': selectedProject.status === 'ACTIVE',
+          'bg-success': selectedProject.status === 'COMPLETED',
+          'bg-secondary': selectedProject.status === 'ARCHIVED'
+        }">{{ selectedProject.status }}</span>
+
+        <hr>
+
+        <h6><i class="bi bi-list-task me-1"></i> Tasks</h6>
+        <ul class="list-group mb-3" *ngIf="projectTasks.length > 0; else noTasks">
+          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let t of projectTasks">
+            <div>
+              {{ t.title }}
+              <span class="badge ms-2" [ngClass]="{
+                'bg-secondary': t.status === 'TODO',
+                'bg-info': t.status === 'IN_PROGRESS',
+                'bg-success': t.status === 'DONE'
+              }">{{ t.status }}</span>
+            </div>
+            <small class="text-muted">Priority: {{ t.priority }}</small>
+          </li>
+        </ul>
+        <ng-template #noTasks><p class="text-muted">No tasks for this project.</p></ng-template>
+
+        <h6><i class="bi bi-people me-1"></i> Members</h6>
+        <ul class="list-group" *ngIf="assignedMembers.length > 0; else noMembers">
+          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let member of assignedMembers">
+            {{ member.name }}
+            <span class="badge bg-primary">{{ member.taskCount }} tasks</span>
+          </li>
+        </ul>
+        <ng-template #noMembers><p class="text-muted">No members assigned.</p></ng-template>
+      </div>
+    </div>
+  </div>
+</div>

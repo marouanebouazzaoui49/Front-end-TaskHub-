@@ -1,0 +1,234 @@
+  <!-- View Project Modal -->
+
+<!-- View Project Modal -->
+<div class="modal fade" id="viewProjectModal" tabindex="-1" aria-labelledby="viewProjectModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow-lg rounded-3">
+
+      <!-- Header -->
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fw-bold" id="viewProjectModalLabel">{{ selectedProject?.name }}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body" *ngIf="selectedProject">
+
+        <!-- Project Info -->
+        <p>{{ selectedProject.description }}</p>
+        <p><strong>Owner:</strong> {{ getOwnerName(selectedProject.ownerId) }}</p>
+        <p><strong>Start:</strong> {{ selectedProject.startDate | date:'shortDate' }} | 
+           <strong>End:</strong> {{ selectedProject.endDate | date:'shortDate' }}</p>
+        <span class="badge"
+              [ngClass]="{
+                'bg-primary': selectedProject.status==='PLANNED',
+                'bg-warning text-dark': selectedProject.status==='ACTIVE',
+                'bg-success': selectedProject.status==='COMPLETED',
+                'bg-secondary': selectedProject.status==='ARCHIVED'
+              }">{{ selectedProject.status }}</span>
+
+        <hr>
+
+        <!-- Tasks -->
+        <h6><i class="bi bi-list-task me-1"></i> Tasks</h6>
+        <ul class="list-group mb-3" *ngIf="selectedProject.tasks?.length > 0; else noTasks">
+          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let t of selectedProject.tasks">
+            <div>
+              {{ t.title }}
+              <span class="badge ms-2" [ngClass]="{
+                'bg-secondary': t.status==='TODO',
+                'bg-info': t.status==='IN_PROGRESS',
+                'bg-success': t.status==='DONE'
+              }">{{ t.status }}</span>
+            </div>
+            <small class="text-muted">Priority: {{ t.priority }}</small>
+          </li>
+        </ul>
+        <ng-template #noTasks><p class="text-muted">No tasks for this project.</p></ng-template>
+
+        <!-- Members -->
+        <h6><i class="bi bi-people me-1"></i> Assigned Members</h6>
+        <ul class="list-group" *ngIf="selectedProject.members?.length > 0; else noMembers">
+          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let member of selectedProject.members">
+            {{ member.name }}
+            <span class="badge bg-primary">{{ member.taskCount }} tasks</span>
+          </li>
+        </ul>
+        <ng-template #noMembers><p class="text-muted">No members assigned.</p></ng-template>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+  <!-- Header + Filtres -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold text-orange">📁 Project Management</h3>
+     </div>
+   <div class="card filter-card shadow-sm mb-4 p-3">
+  <div class="row g-3 align-items-end">
+    <!-- Champ de recherche -->
+    <div class="col-lg-3">
+      <label class="form-label fw-semibold">Search</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" [(ngModel)]="searchText" class="form-control form-control-sm" placeholder="Search projects...">
+      </div>
+    </div>
+
+    <!-- Statut -->
+    <div class="col-lg-3">
+      <label class="form-label fw-semibold">Status</label>
+      <select [(ngModel)]="filterStatus" class="form-select form-select-sm">
+        <option value="">All Status</option>
+        <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+      </select>
+    </div>
+
+    <!-- Date de début -->
+    <div class="col-lg-3">
+      <label class="form-label fw-semibold">Start Date</label>
+      <input type="date" [(ngModel)]="filterStartDate" class="form-control form-control-sm">
+    </div>
+
+    <!-- Date de fin -->
+    <div class="col-lg-3">
+      <label class="form-label fw-semibold">End Date</label>
+      <input type="date" [(ngModel)]="filterEndDate" class="form-control form-control-sm">
+    </div>
+  </div>
+</div>
+
+ 
+
+<!-- Add Project Button -->
+<button type="button" class="btn btn-add-project" data-bs-toggle="modal" data-bs-target="#addProjectModal">
+  <i class="bi bi-plus-lg"></i> Add Project
+</button>
+
+
+
+
+  
+
+  <!-- Add Project Modal -->
+  <div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content shadow-lg rounded-3">
+        <div class="modal-header bg-orange text-white">
+          <h5 class="modal-title fw-bold" id="addProjectModalLabel"><i class="bi bi-plus-circle-fill"></i> Add New Project</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Project Name</label>
+              <input type="text" [(ngModel)]="newProject.name" class="form-control" placeholder="Enter project name">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Description</label>
+              <input type="text" [(ngModel)]="newProject.description" class="form-control" placeholder="Enter description">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Start Date</label>
+              <input type="date" [(ngModel)]="newProject.startDate" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">End Date</label>
+              <input type="date" [(ngModel)]="newProject.endDate" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Status</label>
+              <select [(ngModel)]="newProject.status" class="form-select">
+                <option>PLANNED</option>
+                <option>ACTIVE</option>
+                <option>COMPLETED</option>
+                <option>ARCHIVED</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+  <label class="form-label">Owner</label>
+
+<select [(ngModel)]="newProject.ownerId" class="form-select">
+  <option [ngValue]="null" disabled selected>Choose owner</option>
+  <option *ngFor="let manager of managers" [ngValue]="manager.id">
+    {{ manager.fullName }}
+  </option>
+</select>
+
+</div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-orange" (click)="addProject()" data-bs-dismiss="modal"><i class="bi bi-save"></i> Save Project</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trello-style Board -->
+  <div class="trello-board row g-3 mt-4">
+    <div class="col status-column"
+         *ngFor="let status of statuses"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave($event)"
+         (drop)="onDrop($event, status)">
+
+      <h5 class="fw-bold text-center text-orange mb-3">{{ status }}</h5>
+
+      <div class="d-flex flex-column gap-3">
+        <ng-container *ngFor="let proj of filteredProjects(status)">
+          <div class="card shadow-sm project-card"
+               [ngClass]="{
+                 'border-success': proj.status==='ACTIVE',
+                 'border-primary': proj.status==='PLANNED',
+                 'border-secondary': proj.status==='ARCHIVED',
+                 'border-warning': proj.status==='COMPLETED',
+                 'dragging': draggedProjectId === proj.id
+               }"
+               draggable="true"
+               (dragstart)="onDragStart($event, proj.id)"
+               (dragend)="onDragEnd($event)">
+
+            <div class="card-body p-3">
+
+              <div *ngIf="editProject?.id === proj.id">
+                <input [(ngModel)]="editProject.name" class="form-control mb-1">
+                <input [(ngModel)]="editProject.description" class="form-control mb-1">
+                <input type="date" [(ngModel)]="editProject.startDate" class="form-control mb-1">
+                <input type="date" [(ngModel)]="editProject.endDate" class="form-control mb-1">
+                <select [(ngModel)]="editProject.status" class="form-select mb-1">
+                  <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+                </select>
+                <div class="d-flex justify-content-end gap-1">
+                  <button class="btn btn-success btn-sm" (click)="updateProject()"><i class="bi bi-check-circle-fill"></i></button>
+                  <button class="btn btn-secondary btn-sm" (click)="cancelEdit()"><i class="bi bi-x-circle-fill"></i></button>
+                </div>
+              </div>
+
+              <div *ngIf="editProject?.id !== proj.id">
+                <h6 class="card-title fw-bold">{{ proj.name }}</h6>
+                <p class="card-text">{{ proj.description }}</p>
+                <small class="text-muted">Owner: {{ getOwnerName(proj.ownerId) }}</small><br>
+                <small class="text-muted">From: {{ proj.startDate | date:'shortDate' }} To: {{ proj.endDate | date:'shortDate' }}</small>
+                <div class="mt-2 d-flex justify-content-end gap-1">
+                  <button class="btn btn-sm btn-orange" (click)="startEdit(proj)"><i class="bi bi-pencil-square"></i></button>
+                  <button class="btn btn-danger btn-sm" (click)="deleteProject(proj.id)"><i class="bi bi-trash3-fill"></i></button>
+                  <button class="btn btn-sm btn-primary" (click)="openViewProjectModal(proj)"><i class="bi bi-eye-fill"></i></button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+

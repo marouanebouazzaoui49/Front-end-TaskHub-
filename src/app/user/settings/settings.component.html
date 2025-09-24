@@ -1,0 +1,42 @@
+<div class="container mt-5 settings-page">
+  <div class="card settings-card shadow-sm border-0">
+    <div class="card-header">
+      <h2 class="mb-0">⚙️ Profile Settings</h2>
+    </div>
+    <div class="card-body">
+      <!-- Success & Error Messages -->
+      <div *ngIf="successMessage" class="alert alert-success custom-alert">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-danger custom-alert">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Profile Form -->
+      <form (ngSubmit)="updateProfile()">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" class="form-control custom-input" [(ngModel)]="user.username" name="username" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="fullName" class="form-label">Full Name</label>
+          <input type="text" id="fullName" class="form-control custom-input" [(ngModel)]="user.fullName" name="fullName" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" id="email" class="form-control custom-input" [(ngModel)]="user.email" name="email" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" class="form-control custom-input" [(ngModel)]="user.password" name="password">
+          <small class="form-text text-muted">Leave blank if you do not want to change the password</small>
+        </div>
+
+        <button type="submit" class="btn btn-orange-gradient w-100 fw-bold">Update Profile</button>
+      </form>
+    </div>
+  </div>
+</div>

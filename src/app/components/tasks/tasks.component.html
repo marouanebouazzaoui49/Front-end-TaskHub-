@@ -1,0 +1,232 @@
+<!-- ====== Titre indépendant ====== -->
+<h3 class="text-orange fw-bold mb-3 ms-2">📋 Task Management</h3>
+
+<!-- ====== Filtres sans container global ====== -->
+<div class="card filter-card shadow-sm mb-4 p-3">
+  <div class="row g-3 align-items-end">
+    
+    <!-- Search -->
+    <div class="col-lg-3">
+      <label class="form-label fw-semibold">Search</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" [(ngModel)]="searchTerm" class="form-control" placeholder="Search task or project"/>
+      </div>
+    </div>
+
+    <!-- Project Filter -->
+    <div class="col-lg-3">
+      <label class="form-label fw-semibold">Project</label>
+      <select class="form-select" [(ngModel)]="filterProject">
+        <option [ngValue]="null">All Projects</option>
+        <option *ngFor="let p of projects" [ngValue]="p.id">{{ p.name }}</option>
+      </select>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="col-lg-2">
+      <label class="form-label fw-semibold">Status</label>
+      <select class="form-select" [(ngModel)]="filterStatus">
+        <option [ngValue]="null">All Statuses</option>
+        <option value="TODO">To Do</option>
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="DONE">Done</option>
+      </select>
+    </div>
+
+    <!-- Priority Filter -->
+    <div class="col-lg-2">
+      <label class="form-label fw-semibold">Priority</label>
+      <select class="form-select" [(ngModel)]="filterPriority">
+        <option [ngValue]="null">All Priorities</option>
+        <option value="LOW">Low</option>
+        <option value="MEDIUM">Medium</option>
+        <option value="HIGH">High</option>
+      </select>
+    </div>
+
+    <!-- Vital Filter -->
+    <div class="col-lg-2">
+      <label class="form-label fw-semibold">Vitality</label>
+      <select class="form-select" [(ngModel)]="filterVital">
+        <option value="all">All Vitalities</option>
+        <option value="true">Vital</option>
+        <option value="false">Normal</option>
+      </select>
+    </div>
+
+   
+
+  </div>
+</div>
+ <!-- Bouton Add Task aligné à gauche -->
+    <div class="col-12">
+      <button class="btn btn-orange d-flex align-items-center mt-2" (click)="openAddModal()">
+        <i class="bi bi-plus-lg"></i> Add Task
+      </button>
+    </div>
+    <br>
+
+<!-- ====== Liste des projets ====== -->
+<ng-container *ngFor="let project of projects">
+  <div *ngIf="projectHasVisibleTasks(project.id)" class="mb-5">
+    <div class="project-header mb-4">
+      <h4 class="project-title fw-bold mb-3 text-center p-3 rounded-4"
+          style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); border: 2px solid rgba(255, 255, 255, 0.3);">
+        <i class="bi bi-folder-fill text-warning me-2"></i> {{ project.name }}
+      </h4>
+    </div>
+
+    <div class="trello-board" cdkDropListGroup>
+      <!-- Colonnes et tâches -->
+      <div *ngFor="let status of ['TODO','IN_PROGRESS','DONE']" class="status-column"
+           [ngClass]="getStatusClass(status)"
+           cdkDropList [id]="project.id + '-' + status"
+           [cdkDropListData]="getTasksForColumn(project.id, status)"
+           (cdkDropListDropped)="drop($event)">
+           
+        <h6>{{ status.replace("_", " ") }}</h6>
+
+        <!-- Tâches -->
+        <div *ngFor="let task of getTasksForColumn(project.id, status)" cdkDrag class="task-card-wrapper">
+          <div class="card task-card shadow-sm mb-3">
+            <div class="card-body">
+              <h6 class="card-title mb-3">{{ task.title }}</h6>
+              <p class="mb-2"><strong>Description:</strong> {{ task.description }}</p>
+              <p class="mb-2"><strong>Due Date:</strong> {{ task.dueDate | date : "shortDate" }}</p>
+              <p class="mb-2"><strong>Assignee:</strong> {{ getAssigneeName(task.assigneeId) }}</p>
+
+              <div class="d-flex gap-2 flex-wrap mb-3">
+                <span class="badge" [ngClass]="getPriorityClass(task.priority)">{{ task.priority }}</span>
+                <span class="badge" [ngClass]="task.vital ? 'bg-danger' : 'bg-secondary'">
+                  {{ task.vital ? "Vital" : "Normal" }}
+                </span>
+              </div>
+
+              <!-- Commentaires -->
+              <div class="comments">
+                <div *ngFor="let comment of getCommentsForTask(task.id!)" class="comment-item">
+                  <div class="comment-wrapper">
+                    <div class="avatar">{{ getAuthorName(comment.authorId).charAt(0).toUpperCase() }}</div>
+                    <div class="comment-content">
+                      <div><strong>{{ getAuthorName(comment.authorId) }} :</strong></div>
+                      <div>{{ comment.content }}</div>
+                      <div><span class="text-muted">({{ comment.createdAt | date : "short" }})</span></div>
+                    </div>
+                  </div>
+                  <div class="comment-actions" *ngIf="comment.authorId === currentUser?.id">
+                    <button type="button" (click)="deleteComment(task.id!, comment.id!)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Write a comment..."
+                         [(ngModel)]="newComment[task.id!]" (keyup.enter)="addComment(task.id!)"/>
+                  <button class="btn btn-primary" type="button" (click)="addComment(task.id!)">
+                    <i class="bi bi-send"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between align-items-center p-3"
+                 style="background: rgba(248,250,252,0.8); backdrop-filter: blur(10px); border-top: 1px solid rgba(102,126,234,0.2);">
+              <button class="btn btn-sm btn-orange" (click)="openEditModal(task)">
+                <i class="bi bi-pencil-square"></i> Edit
+              </button>
+              <button class="btn btn-sm btn-danger" (click)="deleteTask(task.id!)">
+                <i class="bi bi-trash3-fill"></i> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Placeholder si pas de tâches -->
+        <div *ngIf="getTasksForColumn(project.id, status).length === 0"
+             class="text-center mt-4 p-4"
+             style="background: rgba(255,255,255,0.1); border-radius:20px; color:#667eea; font-weight:600;">
+          <i class="bi bi-inbox mb-2 d-block" style="font-size:2rem"></i>
+          No matching tasks
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Modal reste identique -->
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="taskModalLabel">{{ taskModalTitle }}</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="row g-4">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Title</label>
+                <input type="text" [(ngModel)]="currentTask.title" name="title" class="form-control" placeholder="Enter task title"/>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Due Date</label>
+                <input type="date" [(ngModel)]="currentTask.dueDate" name="dueDate" class="form-control"/>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Project</label>
+                <select [(ngModel)]="currentTask.projectId" name="projectId" class="form-select">
+                  <option [ngValue]="null">-- Select Project --</option>
+                  <option *ngFor="let p of projects" [ngValue]="p.id">{{ p.name }}</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Assignee</label>
+                <select [(ngModel)]="currentTask.assigneeId" name="assigneeId" class="form-select">
+                  <option [ngValue]="null">-- Select User --</option>
+                  <option *ngFor="let u of normalUsers" [ngValue]="u.id">{{ u.fullName }}</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Priority</label>
+                <select [(ngModel)]="currentTask.priority" name="priority" class="form-select">
+                  <option value="LOW">🟢 Low</option>
+                  <option value="MEDIUM">🟡 Medium</option>
+                  <option value="HIGH">🔴 High</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Status</label>
+                <select [(ngModel)]="currentTask.status" name="status" class="form-select">
+                  <option value="TODO">📝 To Do</option>
+                  <option value="IN_PROGRESS">⚡ In Progress</option>
+                  <option value="DONE">✅ Done</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-bold">Description</label>
+                <textarea [(ngModel)]="currentTask.description" name="description" class="form-control" rows="4" placeholder="Describe the task..."></textarea>
+              </div>
+              <div class="col-12">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="currentTask.vital" name="vital" id="vitalSwitch" />
+                  <label class="form-check-label fw-bold ms-2" for="vitalSwitch">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> 
+                    Mark as Vital Task
+                  </label>
+                </div>
+              </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Cancel</button>
+          <button class="btn btn-orange" (click)="saveTask()" data-bs-dismiss="modal">
+            <i class="bi bi-check-circle me-1"></i>{{ isEditing ? "Update Task" : "Add Task" }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
